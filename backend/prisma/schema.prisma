@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  documents  Document[]
+  sharedDocs DocumentShare[]
+  versions   Version[] 
+  createdAt  DateTime @default(now())
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  title      String
+  content    Json?
+  ownerId    String
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade) 
+  sharedWith DocumentShare[]
+  versions   Version[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model DocumentShare {
+  id         String   @id @default(uuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade) 
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  role       Role    
+
+  @@unique([documentId, userId]) 
+}
+
+model Version {
+  id         String   @id @default(uuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade) 
+  content    Json
+  createdAt  DateTime @default(now())
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id])
+}
