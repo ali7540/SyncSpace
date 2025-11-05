@@ -1,5 +1,16 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# Node.js
+node_modules/
 
-/generated/prisma
+# Environment Variables
+.env
+.env.local
+
+# Prisma
+# This is the custom output folder we must ignore
+generated/
+
+# Logs
+npm-debug.log
+
+# macOS
+.DS_Store
