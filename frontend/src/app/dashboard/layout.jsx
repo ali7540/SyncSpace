@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardLayout({ children }) {
   const { user, loading } = useAuth();
+//   console.log(user)
   const router = useRouter();
 
   useEffect(() => {

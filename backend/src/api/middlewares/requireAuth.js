@@ -3,13 +3,13 @@ import prisma from '../../config/prisma.js';
 
 export const requireAuth = async (req, res, next) => {
   let token;
-
+  const authorization = req.headers.authorization || req.headers.Authorization;
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    authorization &&
+    authorization.startsWith('Bearer')
   ) {
     try {
-      token = req.headers.authorization.split(' ')[1];
+      token = authorization.split(' ')[1];
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

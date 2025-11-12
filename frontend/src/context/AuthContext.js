@@ -18,10 +18,17 @@ export function AuthProvider({ children }) {
       try {
         if (token) {
           const response = await api.get("/auth/me");
+          // console.log(response)
           setUser(response.data.user);
         } else {
         }
       } catch (error) {
+        if (error.response) {
+          console.error("Auth check failed:", error.response.data);
+        } else {
+          console.error("Auth check failed:", error.message);
+        }
+        
         localStorage.removeItem("token");
         setUser(null);
       } finally {
