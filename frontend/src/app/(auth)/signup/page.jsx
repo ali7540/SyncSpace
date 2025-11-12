@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const Logo = () => (
-  <div className="text-center text-3xl font-bold">
-    <span className="text-blue-500">S</span><span className="text-red-500">y</span><span className="text-yellow-500">n</span><span className="text-blue-500">c</span><span className="text-green-500">S</span><span className="text-red-500">pace</span>
+  <div className="text-center text-4xl font-bold">
+    <span className="text-blue-600">Sync</span>
+    <span className="text-gray-900">Space</span>
   </div>
 );
 
@@ -14,6 +16,7 @@ export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -38,9 +41,6 @@ export default function SignupPage() {
       <h2 className="mt-6 text-center text-2xl font-semibold text-gray-900">
         Create your account
       </h2>
-      <p className="mt-1 text-center text-sm text-gray-600">
-        to start using SyncSpace
-      </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         {error && (
@@ -54,7 +54,7 @@ export default function SignupPage() {
             Full Name
           </label>
           <input
-            id="name" name="name" type="text" autoComplete="name" required
+            id="name" name="name" type="text" autoComplete="name" required placeholder='Enter your name'
             value={name}
             onChange={(e) => setName(e.target.value)} 
             className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
@@ -66,9 +66,9 @@ export default function SignupPage() {
             Email address
           </label>
           <input
-            id="email" name="email" type="email" autoComplete="email" required
+            id="email" name="email" type="email" autoComplete="email" required placeholder='Enter your email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Corrected typo
+            onChange={(e) => setEmail(e.target.value)}
             className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
           />
         </div>
@@ -77,12 +77,27 @@ export default function SignupPage() {
           <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
             Password
           </label>
-          <input
-            id="password" name="password" type="password" autoComplete="new-password" required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} // Corrected typo
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          <div className="relative">
+            <input
+              id="password" name="password" placeholder="••••••••"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password" required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? (
+                <EyeOff size={18} strokeWidth={1.75} />
+              ) : (
+                <Eye size={18} strokeWidth={1.75} />
+              )}
+            </button>
+          </div>
         </div>
 
         <div>

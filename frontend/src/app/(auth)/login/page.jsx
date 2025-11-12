@@ -3,21 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const Logo = () => (
-  <div className="text-center text-3xl font-bold">
-    <span className="text-blue-500">S</span>
-    <span className="text-red-500">y</span>
-    <span className="text-yellow-500">n</span>
-    <span className="text-blue-500">c</span>
-    <span className="text-green-500">S</span>
-    <span className="text-red-500">pace</span>
+  <div className="text-center text-4xl font-bold">
+    <span className="text-blue-600">Sync</span>
+    <span className="text-gray-900">Space</span>
   </div>
 );
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -42,11 +40,11 @@ export default function LoginPage() {
     <>
       <Logo />
       <h2 className="mt-6 text-center text-2xl font-semibold text-gray-900">
-        Sign in
+        Sign In
       </h2>
-      <p className="mt-1 text-center text-sm text-gray-600">
+      {/* <p className="mt-1 text-center text-sm text-gray-600">
         to continue to SyncSpace
-      </p>
+      </p> */}
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         {error && (
@@ -66,6 +64,7 @@ export default function LoginPage() {
             id="email"
             name="email"
             type="email"
+            placeholder="Enter your email"
             autoComplete="email"
             required
             value={email}
@@ -73,7 +72,6 @@ export default function LoginPage() {
             className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
           />
         </div>
-
         <div>
           <label
             htmlFor="password"
@@ -81,16 +79,30 @@ export default function LoginPage() {
           >
             Password
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} // Corrected typo
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 sm:text-sm"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? (
+                <EyeOff size={18} strokeWidth={1.75} />
+              ) : (
+                <Eye size={18} strokeWidth={1.75} />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="text-sm">
