@@ -48,9 +48,9 @@ Frontend → Backend (API + WebSocket) → Database
 
 ### **Hosting**
 
-* **Frontend** → [Vercel](https://vercel.com)
-* **Backend** → [Render](https://render.com)
-* **Database** → [Railway](https://railway.app) / [Neon.tech](https://neon.tech)
+* **Frontend (Vercel)** → https://sync-space-virid.vercel.app/
+* **Backend (Render)** → https://syncspace-backend-vqec.onrender.com
+* **Database (neonTech)** → https://console.neon.tech/app/projects/soft-water-06417688?branchId=br-flat-wildflower-a16130m5&database=neondb
 
 ---
 
