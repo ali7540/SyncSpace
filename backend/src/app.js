@@ -4,10 +4,23 @@ import apiRoutes from './api/routes/index.js';
 
 const app = express();
 
-app.use(cors({
-  origin: '*', // For development. In production, list your frontend's domain
-}));
+const allowedOrigins = [
+  process.env.FRONTEND_URL, // Your live Vercel URL
+  'http://localhost:3000'     // Your local dev URL
+];
 
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));

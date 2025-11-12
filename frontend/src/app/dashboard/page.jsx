@@ -5,9 +5,9 @@ import { useAuth } from "@/context/AuthContext";
 export default function DashboardPage() {
   const { user, logout } = useAuth();
 
-  if (!user) {
-    return <p>Loading...</p>; 
-  }
+  // if (!user) {
+  //   return <p>Loading...</p>; 
+  // }
 
   return (
     <div className="p-8">
