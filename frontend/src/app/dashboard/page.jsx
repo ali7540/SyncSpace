@@ -1,13 +1,10 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import DocumentList from "./DocumentList"; 
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
-
-  // if (!user) {
-  //   return <p>Loading...</p>; 
-  // }
 
   return (
     <div className="p-8">
@@ -27,11 +24,8 @@ export default function DashboardPage() {
           </button>
         </div>
       </nav>
-
-      <div className="text-center">
-        <h2 className="text-3xl font-semibold">Your Dashboard</h2>
-        <p className="mt-4 text-gray-600">Your documents will appear here.</p>
-      </div>
+      
+      <DocumentList />
     </div>
   );
 }
