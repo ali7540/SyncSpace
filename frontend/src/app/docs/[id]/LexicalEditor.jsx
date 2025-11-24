@@ -106,6 +106,8 @@ import { ListItemNode, ListNode } from '@lexical/list';
 import { LinkNode } from '@lexical/link';
 import Toolbar from './Toolbar';
 import './lexical.css';
+import CollaborationPlugin from './CollaborationPlugin';
+
 
 const theme = {
   paragraph: 'editor-paragraph',
@@ -135,7 +137,7 @@ function onError(error) {
   console.error(error);
 }
 
-export default function LexicalEditor({ initialContent, onContentChange }) {
+export default function LexicalEditor({ initialContent, onContentChange, socket, documentId }) {
   const initialEditorState = initialContent ? JSON.stringify(initialContent) : null;
 
   const initialConfig = {
@@ -171,6 +173,7 @@ export default function LexicalEditor({ initialContent, onContentChange }) {
           <ListPlugin />
           <LinkPlugin />
           <OnChangePlugin onChange={handleOnChange} />
+          <CollaborationPlugin socket={socket} documentId={documentId} />
         </div>
       </div>
     </LexicalComposer>
