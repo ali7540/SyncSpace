@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDocuments, createDocument, getDocumentById, updateDocument, deleteDocument } from '../controllers/document.controller.js';
+import { getDocuments, createDocument, getDocumentById, updateDocument, deleteDocument, shareDocument } from '../controllers/document.controller.js';
 import { requireAuth } from '../middlewares/requireAuth.js';
 
 const router = Router();
@@ -15,5 +15,7 @@ router.get('/:id', getDocumentById);
 router.put('/:id', updateDocument);
 
 router.delete('/:id', deleteDocument);
+
+router.post('/:id/share', shareDocument);
 
 export default router;
