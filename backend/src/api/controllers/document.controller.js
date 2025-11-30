@@ -95,14 +95,33 @@ export const updateDocument = async (req, res) => {
     const userId = req.user.id;
     const { title, content } = req.body;
 
+    // ... (Existing auth checks) ...
     const result = await getAuthorizedDocument(id, userId);
     if (!result) return res.status(404).json({ errors: [{ msg: 'Access denied' }] });
+    const { role, document } = result; // Need the document object too
+    
+    if (role === 'VIEWER') return res.status(403).json({ errors: [{ msg: 'Viewers cannot modify' }] });
 
-    const { role } = result;
+    // --- AUTO-VERSION LOGIC ---
+    // Check the last version timestamp
+    const lastVersion = await prisma.version.findFirst({
+        where: { documentId: id },
+        orderBy: { createdAt: 'desc' }
+    });
 
-    // 1. SECURITY FIX: Prevent VIEWERS from updating
-    if (role === 'VIEWER') {
-      return res.status(403).json({ errors: [{ msg: 'Viewers cannot modify this document' }] });
+    const now = new Date();
+    // If no version exists OR last version is older than 30 minutes
+    const shouldSnapshot = !lastVersion || (now - new Date(lastVersion.createdAt) > 30 * 60 * 1000);
+
+    if (shouldSnapshot && content) {
+        // Create a snapshot of the OLD content before overwriting it
+        await prisma.version.create({
+            data: {
+                documentId: id,
+                content: document.content, // Save the state BEFORE this update
+                authorId: userId // The person triggering the update
+            }
+        });
     }
 
     const updatedDocument = await prisma.document.update({
@@ -112,6 +131,7 @@ export const updateDocument = async (req, res) => {
 
     res.status(200).json(updatedDocument);
   } catch (error) {
+    // ... error handling
     console.error('Update error:', error);
     res.status(500).json({ errors: [{ msg: 'Server error' }] });
   }

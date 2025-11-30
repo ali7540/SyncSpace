@@ -224,7 +224,7 @@ export default function DocumentList() {
                 {isOwner && (
                   <button
                     onClick={(e) => handleDelete(doc.id, e)}
-                    className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur rounded-full text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    className=" top-2 right-2 p-1.5 bg-white/90 backdrop-blur rounded-full text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                   >
                     <svg
                       className="w-4 h-4"

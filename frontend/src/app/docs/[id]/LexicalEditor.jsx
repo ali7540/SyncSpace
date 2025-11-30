@@ -150,7 +150,7 @@ export default function LexicalEditor({
     namespace: "MyEditor",
     theme,
     onError,
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode].filter(Boolean),
     editorState: initialEditorState,
     editable: !isReadOnly,
   };
