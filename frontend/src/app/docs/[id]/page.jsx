@@ -359,6 +359,8 @@ export default function DocumentPage({ params }) {
   const debouncedContent = useDebounce(content, 1000);
 
   const initialContentRef = useRef(null);
+  const initialTitleRef = useRef(null);
+
 
   // ... (Socket listener for room-users is unchanged)
   useEffect(() => {
@@ -389,6 +391,7 @@ export default function DocumentPage({ params }) {
         setContent(loadedContent);
         // Store the stringified version for comparison later
         initialContentRef.current = JSON.stringify(loadedContent);
+        initialTitleRef.current = doc.title;
       } catch (error) {
         setSaveStatus("Error loading");
       } finally {
@@ -401,13 +404,17 @@ export default function DocumentPage({ params }) {
   // --- AUTO-SAVE LOGIC (FIXED) ---
   useEffect(() => {
     // BUG FIX: Do NOT save if we are previewing a version!
-    if (loading || content == null || role === "VIEWER" || previewVersion)
-      return;
+    if (loading || content == null || role === "VIEWER" || previewVersion) return;
 
     // FIX: Compare current content vs what we loaded from DB.
     // If they are the same string, the user hasn't typed anything new.
     const currentContentString = JSON.stringify(debouncedContent);
-    if (currentContentString === initialContentRef.current) {
+
+    const titleChanged = debouncedTitle !== initialTitleRef.current;
+    const contentChanged = currentContentString !== initialContentRef.current
+
+    // If NOTHING changed, skip saving
+    if (!contentChanged && !titleChanged) {
         return; 
     }
 
@@ -422,6 +429,7 @@ export default function DocumentPage({ params }) {
         setSaveStatus("Saved");
         // Update our ref so we don't save again until it changes again
         initialContentRef.current = currentContentString;
+        initialTitleRef.current = debouncedTitle;
       } catch (error) {
         console.error("Save failed", error);
         setSaveStatus("Error saving");
