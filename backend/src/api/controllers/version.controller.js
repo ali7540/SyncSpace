@@ -33,7 +33,7 @@ export const getVersions = async (req, res) => {
     });
 
     res.status(200).json(versions);
-    console.log(versions)
+    // console.log(versions)
   } catch (error) {
     console.error('Error fetching versions:', error);
     res.status(500).json({ errors: [{ msg: 'Server error' }] });

@@ -112,7 +112,7 @@ export const updateDocument = async (req, res) => {
     const now = new Date();
     // If no version exists OR last version is older than 30 minutes
     const shouldSnapshot = !lastVersion || (now - new Date(lastVersion.createdAt) > 30 * 60 * 1000);
-
+    
     if (shouldSnapshot && content) {
         // Create a snapshot of the OLD content before overwriting it
         await prisma.version.create({

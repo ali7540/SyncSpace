@@ -303,7 +303,7 @@
 "use client";
 
 import Link from "next/link";
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import api from "@/lib/api";
 import { useDebounce } from "@/hooks/useDebounce";
 import LexicalEditor from "./LexicalEditor";
@@ -312,6 +312,7 @@ import { useAuth } from "@/context/AuthContext";
 import ShareModal from "./ShareModal";
 import HistorySidebar from "./HistorySidebar";
 import VersionPreview from "./VersionPreview"; // Import new component
+
 
 const EMPTY_DOC_STATE = {
   root: {
@@ -357,6 +358,8 @@ export default function DocumentPage({ params }) {
   const debouncedTitle = useDebounce(title, 1000);
   const debouncedContent = useDebounce(content, 1000);
 
+  const initialContentRef = useRef(null);
+
   // ... (Socket listener for room-users is unchanged)
   useEffect(() => {
     if (!socket) return;
@@ -376,8 +379,16 @@ export default function DocumentPage({ params }) {
         setTitle(doc.title);
         setRole(doc.userRole);
         setOwnerName(doc.owner?.name || "Unknown");
-        if (doc.content && doc.content.root) setContent(doc.content);
-        else setContent(EMPTY_DOC_STATE);
+
+        // Check for valid content structure
+        let loadedContent = EMPTY_DOC_STATE;
+        if (doc.content && doc.content.root) {
+          loadedContent = doc.content;
+        }
+        
+        setContent(loadedContent);
+        // Store the stringified version for comparison later
+        initialContentRef.current = JSON.stringify(loadedContent);
       } catch (error) {
         setSaveStatus("Error loading");
       } finally {
@@ -390,8 +401,15 @@ export default function DocumentPage({ params }) {
   // --- AUTO-SAVE LOGIC (FIXED) ---
   useEffect(() => {
     // BUG FIX: Do NOT save if we are previewing a version!
-    if (loading || (content === null || content === EMPTY_DOC_STATE) || role === "VIEWER" || previewVersion)
+    if (loading || content == null || role === "VIEWER" || previewVersion)
       return;
+
+    // FIX: Compare current content vs what we loaded from DB.
+    // If they are the same string, the user hasn't typed anything new.
+    const currentContentString = JSON.stringify(debouncedContent);
+    if (currentContentString === initialContentRef.current) {
+        return; 
+    }
 
     const saveDocument = async () => {
       setSaveStatus("Saving...");
@@ -402,6 +420,8 @@ export default function DocumentPage({ params }) {
           content: debouncedContent,
         });
         setSaveStatus("Saved");
+        // Update our ref so we don't save again until it changes again
+        initialContentRef.current = currentContentString;
       } catch (error) {
         console.error("Save failed", error);
         setSaveStatus("Error saving");
@@ -438,6 +458,8 @@ export default function DocumentPage({ params }) {
       setPreviewVersion(null);
       setIsHistoryOpen(false);
       setSaveStatus("Restored");
+      // Update ref to avoid double-save
+      initialContentRef.current = JSON.stringify(version.content);
     } catch (err) {
       alert("Failed to restore version");
     }

@@ -142,16 +142,24 @@ export default function LexicalEditor({
   documentId,
   isReadOnly,
 }) {
-  const initialEditorState = initialContent
-    ? JSON.stringify(initialContent)
-    : null;
+  // FIX: Validate the structure before stringifying
+  let validEditorState = null;
+  if (
+    initialContent &&
+    typeof initialContent === "object" &&
+    initialContent.root // Must have a root
+  ) {
+    validEditorState = JSON.stringify(initialContent);
+  }
 
   const initialConfig = {
     namespace: "MyEditor",
     theme,
     onError,
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode].filter(Boolean),
-    editorState: initialEditorState,
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode].filter(
+      Boolean
+    ),
+    editorState: validEditorState,
     editable: !isReadOnly,
   };
 
@@ -183,7 +191,9 @@ export default function LexicalEditor({
           <ListPlugin />
           <LinkPlugin />
           <OnChangePlugin onChange={handleOnChange} />
-          <CollaborationPlugin socket={socket} documentId={documentId} />
+          {socket && documentId !== "preview" && (
+            <CollaborationPlugin socket={socket} documentId={documentId} />
+          )}{" "}
         </div>
       </div>
     </LexicalComposer>
