@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
@@ -18,7 +19,14 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+      if (user) {
+        router.push("/dashboard");
+      }
+    }, [user,router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

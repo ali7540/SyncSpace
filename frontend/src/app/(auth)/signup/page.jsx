@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from "next/navigation";
 
 const Logo = () => (
   <div className="text-center text-4xl font-bold">
@@ -20,6 +21,14 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
+  const { user, login } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+      if (user) {
+        router.push("/dashboard");
+      }
+    }, [user,router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

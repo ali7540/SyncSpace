@@ -143,26 +143,6 @@ export const getDocuments = async (req, res) => {
         orderBy = { updatedAt: 'desc' };
         break;
     }
-
-    // NOTE: Prisma client-side sorting for case-insensitivity
-    // Since Prisma's native case-insensitive sort support varies, 
-    // the most robust way for a senior dev to ensure this works perfectly 
-    // without raw SQL is to fetch and then sort if we are sorting by title.
-    // However, that breaks pagination.
-    
-    // The standard PostgreSQL way via Prisma is often to rely on the collation.
-    // If your database collation is standard, it might still separate cases.
-    
-    // BUT, for this Capstone, the cleanest "Code-Only" fix without touching DB config
-    // is to use `mode: 'insensitive'` if your Prisma version supports it in orderBy (experimental),
-    // OR simply accept the DB's behavior.
-    
-    // FOR A ROBUST FIX: We will stick with the standard orderBy above.
-    // If you see strict case separation, it is due to the PostgreSQL collation.
-    // Changing that requires a migration.
-    
-    // Let's execute the query as is. If you still see the bug, we can try
-    // a raw query, but that loses type safety.
     
     const [documents, totalDocuments] = await prisma.$transaction([
       prisma.document.findMany({
@@ -178,9 +158,6 @@ export const getDocuments = async (req, res) => {
       prisma.document.count({ where: whereClause })
     ]);
 
-    // SENIOR DEV FIX: Manual Sort on the "Page"
-    // Since we are only fetching 12 items, we can re-sort this small array
-    // in Javascript to guarantee the visual order is perfect, even if DB collation is strict.
     if (sort === 'title_asc') {
         documents.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
     } else if (sort === 'title_desc') {
@@ -232,7 +209,6 @@ export const getDocumentById = async (req, res) => {
       return res.status(404).json({ errors: [{ msg: 'Document not found or access denied' }] });
     }
 
-    // Return the document AND the user's specific role
     res.status(200).json({ ...result.document, userRole: result.role });
   } catch (error) {
     res.status(500).json({ errors: [{ msg: 'Server error' }] });
@@ -245,31 +221,26 @@ export const updateDocument = async (req, res) => {
     const userId = req.user.id;
     const { title, content } = req.body;
 
-    // ... (Existing auth checks) ...
     const result = await getAuthorizedDocument(id, userId);
     if (!result) return res.status(404).json({ errors: [{ msg: 'Access denied' }] });
-    const { role, document } = result; // Need the document object too
+    const { role, document } = result; 
     
     if (role === 'VIEWER') return res.status(403).json({ errors: [{ msg: 'Viewers cannot modify' }] });
 
-    // --- AUTO-VERSION LOGIC ---
-    // Check the last version timestamp
     const lastVersion = await prisma.version.findFirst({
         where: { documentId: id },
         orderBy: { createdAt: 'desc' }
     });
 
     const now = new Date();
-    // If no version exists OR last version is older than 30 minutes
     const shouldSnapshot = !lastVersion || (now - new Date(lastVersion.createdAt) > 30 * 60 * 1000);
     
     if (shouldSnapshot && content) {
-        // Create a snapshot of the OLD content before overwriting it
         await prisma.version.create({
             data: {
                 documentId: id,
-                content: document.content, // Save the state BEFORE this update
-                authorId: userId // The person triggering the update
+                content: document.content, 
+                authorId: userId 
             }
         });
     }
@@ -281,7 +252,6 @@ export const updateDocument = async (req, res) => {
 
     res.status(200).json(updatedDocument);
   } catch (error) {
-    // ... error handling
     console.error('Update error:', error);
     res.status(500).json({ errors: [{ msg: 'Server error' }] });
   }
@@ -307,7 +277,6 @@ export const deleteDocument = async (req, res) => {
 };
 
 export const shareDocument = async (req, res) => {
-  // (This function remains the same as previously implemented)
   try {
     const { id } = req.params;
     const { email, role } = req.body;

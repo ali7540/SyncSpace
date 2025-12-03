@@ -1,10 +1,5 @@
 import prisma from '../../config/prisma.js';
 
-/**
- * @route   GET /api/docs/:id/versions
- * @desc    Get all version history for a document
- * @access  Private (Viewers allowed to SEE history, but not restore)
- */
 export const getVersions = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -40,8 +35,6 @@ export const getVersions = async (req, res) => {
   }
 };
 
-
-
 export const createVersion = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -55,7 +48,6 @@ export const createVersion = async (req, res) => {
 
     if (!document) return res.status(404).json({ errors: [{ msg: 'Document not found' }] });
     
-    // Permission check
     const isOwner = document.ownerId === userId;
     const shareEntry = document.sharedWith.find(share => share.userId === userId);
     const isEditor = shareEntry && shareEntry.role === 'EDITOR';
@@ -64,7 +56,6 @@ export const createVersion = async (req, res) => {
         return res.status(403).json({ errors: [{ msg: 'Only editors can save versions' }] });
     }
 
-    // FIX: Ensure content is never null. Fallback to empty object {}
     const versionContent = content || document.content || {};
 
     const newVersion = await prisma.version.create({
@@ -79,5 +70,31 @@ export const createVersion = async (req, res) => {
   } catch (error) {
     console.error('Error creating version:', error);
     res.status(500).json({ errors: [{ msg: 'Server error creating version' }] });
+  }
+};
+
+export const deleteVersion = async (req, res) => {
+  const { docId, versionId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const document = await prisma.document.findUnique({
+      where: { id: docId }
+    });
+
+    if (!document) return res.status(404).json({ errors: [{ msg: 'Document not found' }] });
+
+    if (document.ownerId !== userId) {
+      return res.status(403).json({ errors: [{ msg: 'Only the document owner can delete versions' }] });
+    }
+
+    await prisma.version.delete({
+      where: { id: versionId }
+    });
+
+    res.status(200).json({ msg: 'Version deleted' });
+  } catch (error) {
+    console.error('Error deleting version:', error);
+    res.status(500).json({ errors: [{ msg: 'Server error' }] });
   }
 };

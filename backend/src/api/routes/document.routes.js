@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getDocuments, createDocument, getDocumentById, updateDocument, deleteDocument, shareDocument } from '../controllers/document.controller.js';
 import { requireAuth } from '../middlewares/requireAuth.js';
-import { getVersions, createVersion } from '../controllers/version.controller.js'; 
+import { getVersions, createVersion, deleteVersion } from '../controllers/version.controller.js'; 
 
 const router = Router();
 
@@ -22,5 +22,7 @@ router.post('/:id/share', shareDocument);
 router.get('/:id/versions', getVersions); 
 
 router.post('/:id/versions', createVersion); 
+
+router.delete('/:docId/versions/:versionId', deleteVersion); 
 
 export default router;
