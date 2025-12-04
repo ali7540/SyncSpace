@@ -29,7 +29,6 @@ Frontend → Backend (API + WebSocket) → Database
 ### **Frontend**
 
 * **Next.js** – Dynamic routing & server-rendered UI
-* **Zustand** – Lightweight state management
 * **TailwindCSS** – Clean and responsive styling
 * **Socket.io-client** – Real-time communication
 
@@ -49,8 +48,6 @@ Frontend → Backend (API + WebSocket) → Database
 ### **Hosting**
 
 * **Frontend (Vercel)** → https://sync-space-virid.vercel.app/
-* **Backend (Render)** → https://syncspace-backend-vqec.onrender.com
-* **Database (neonTech)** → https://console.neon.tech/app/projects/soft-water-06417688?branchId=br-flat-wildflower-a16130m5&database=neondb
 
 ---
 
@@ -73,7 +70,7 @@ Frontend → Backend (API + WebSocket) → Database
 
 | **Layer**          | **Technologies Used**                           |
 | ------------------ | ----------------------------------------------- |
-| **Frontend**       | Next.js, Zustand, TailwindCSS, Socket.io-client |
+| **Frontend**       | Next.js, TailwindCSS, Socket.io-client |
 | **Backend**        | Node.js, Express.js, Socket.io                  |
 | **Database**       | PostgreSQL (via Prisma ORM)                     |
 | **Authentication** | JWT (JSON Web Tokens)                           |
@@ -122,7 +119,7 @@ SyncSpace isn’t just another CRUD app — it’s a **real-time collaborative p
 | ----------------------- | -------------------- |
 | **Vercel**              | Hosting the frontend |
 | **Render**              | Hosting the backend  |
-| **Railway / Neon.tech** | PostgreSQL database  |
+| **Neon.tech**           | PostgreSQL database  |
 
 ---
 
