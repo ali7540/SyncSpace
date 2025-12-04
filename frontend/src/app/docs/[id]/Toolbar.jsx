@@ -1,117 +1,3 @@
-// "use client";
-
-// import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-// import { useCallback, useEffect, useState } from 'react';
-// import {
-//   $getSelection,
-//   $isRangeSelection,
-//   FORMAT_TEXT_COMMAND,
-//   UNDO_COMMAND,
-//   REDO_COMMAND,
-// } from 'lexical';
-// import { $isLinkNode } from '@lexical/link';
-// import { $isAtNodeEnd } from '@lexical/selection';
-
-// // A helper to get the selected node
-// function getSelectedNode(selection) {
-//   const anchor = selection.anchor;
-//   const focus = selection.focus;
-//   const anchorNode = selection.anchor.getNode();
-//   const focusNode = selection.focus.getNode();
-//   if (anchorNode === focusNode) {
-//     return anchorNode;
-//   }
-//   const isBackward = selection.isBackward();
-//   if (isBackward) {
-//     return $isAtNodeEnd(focus) ? anchorNode : focusNode;
-//   } else {
-//     return $isAtNodeEnd(anchor) ? focusNode : anchorNode;
-//   }
-// }
-
-// // Our Toolbar component
-// export default function Toolbar() {
-//   const [editor] = useLexicalComposerContext();
-//   const [activeEditor, setActiveEditor] = useState(editor);
-//   const [isBold, setIsBold] = useState(false);
-//   const [isItalic, setIsItalic] = useState(false);
-//   const [isUnderline, setIsUnderline] = useState(false);
-
-//   // This function is called on every editor update
-//   const updateToolbar = useCallback(() => {
-//     const selection = $getSelection();
-//     if ($isRangeSelection(selection)) {
-//       // Update the state of the toolbar buttons
-//       setIsBold(selection.hasFormat('bold'));
-//       setIsItalic(selection.hasFormat('italic'));
-//       setIsUnderline(selection.hasFormat('underline'));
-
-//       // Check for links (we won't implement a link button, but this is good)
-//       const node = getSelectedNode(selection);
-//       const parent = node.getParent();
-//       if ($isLinkNode(parent) || $isLinkNode(node)) {
-//         // isLink = true;
-//       } else {
-//         // isLink = false;
-//       }
-//     }
-//   }, []);
-
-//   // Register an listener to update the toolbar
-//   useEffect(() => {
-//     return activeEditor.registerUpdateListener(({ editorState }) => {
-//       editorState.read(() => {
-//         updateToolbar();
-//       });
-//     });
-//   }, [updateToolbar, activeEditor]);
-
-//   return (
-//     <div className="flex items-center gap-2 p-2 border-b border-gray-200">
-//       <button
-//         onClick={() => activeEditor.dispatchCommand(UNDO_COMMAND)}
-//         className="p-2 rounded hover:bg-gray-100"
-//         title="Undo (Cmd+Z)"
-//       >
-//         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l4-4m-4 4l4 4"></path></svg>
-//       </button>
-//       <button
-//         onClick={() => activeEditor.dispatchCommand(REDO_COMMAND)}
-//         className="p-2 rounded hover:bg-gray-100"
-//         title="Redo (Cmd+Y)"
-//       >
-//         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 10h-10a8 8 0 00-8 8v2m18-10l-4-4m4 4l-4 4"></path></svg>
-//       </button>
-      
-//       <span className="w-px h-6 bg-gray-200 mx-2"></span>
-
-//       <button
-//         onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
-//         className={`p-2 rounded ${isBold ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-//         title="Bold (Cmd+B)"
-//       >
-//         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-//       </button>
-//       <button
-//         onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
-//         className={`p-2 rounded ${isItalic ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-//         title="Italic (Cmd+I)"
-//       >
-//         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 4L7 20m8-16l-4 16"></path></svg>
-//       </button>
-//       <button
-//         onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
-//         className={`p-2 rounded ${isUnderline ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-//         title="Underline (Cmd+U)"
-//       >
-//         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 11v-5a3 3 0 013-3h8a3 3 0 013 3v5m-1 0v5a3 3 0 01-3 3h-8a3 3 0 01-3-3v-5m16 0h-14"></path></svg>
-//       </button>
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -120,16 +6,15 @@ import {
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
-  FORMAT_ELEMENT_COMMAND, // For alignment
+  FORMAT_ELEMENT_COMMAND, 
   UNDO_COMMAND,
   REDO_COMMAND,
 } from 'lexical';
 import { $isLinkNode } from '@lexical/link';
-import { $setBlocksType } from '@lexical/selection'; // For block types
-import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'; // For block types
-import { $createParagraphNode } from 'lexical'; // For block types
+import { $setBlocksType } from '@lexical/selection'; 
+import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'; 
+import { $createParagraphNode } from 'lexical'; 
 
-// --- Helper function (unchanged) ---
 function getSelectedNode(selection) {
   const anchor = selection.anchor;
   const focus = selection.focus;
@@ -146,30 +31,24 @@ function getSelectedNode(selection) {
   }
 }
 
-// --- Our Toolbar component ---
 export default function Toolbar() {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   
-  // --- New State for new features ---
   const [blockType, setBlockType] = useState('paragraph');
   const [textAlign, setTextAlign] = useState('left');
   
-  // --- State for bold, italic, etc. (unchanged) ---
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
 
-  // --- This function is now much more powerful ---
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
-      // Update text formats (bold, italic, etc.)
       setIsBold(selection.hasFormat('bold'));
       setIsItalic(selection.hasFormat('italic'));
       setIsUnderline(selection.hasFormat('underline'));
 
-      // Update block type and alignment
       const anchorNode = selection.anchor.getNode();
       const element =
         anchorNode.getKey() === 'root'
@@ -180,20 +59,17 @@ export default function Toolbar() {
       const elementDOM = activeEditor.getElementByKey(elementKey);
 
       if (elementDOM !== null) {
-        // Get block type
         if ($isHeadingNode(element)) {
           const tag = element.getTag();
-          setBlockType(tag); // e.g., 'h1', 'h2'
+          setBlockType(tag); 
         } else {
           setBlockType('paragraph');
         }
-        // Get text alignment
         setTextAlign(element.getFormat());
       }
     }
   }, [activeEditor]);
 
-  // --- Listeners (unchanged) ---
   useEffect(() => {
     return activeEditor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
@@ -202,7 +78,6 @@ export default function Toolbar() {
     });
   }, [updateToolbar, activeEditor]);
 
-  // --- NEW: Function to format block type ---
   const formatBlock = (type) => {
     activeEditor.update(() => {
       const selection = $getSelection();
@@ -234,7 +109,6 @@ export default function Toolbar() {
       
       <span className="w-px h-6 bg-gray-200 mx-2"></span>
 
-      {/* --- NEW: Block Type Dropdown --- */}
       <select
         value={blockType}
         onChange={(e) => formatBlock(e.target.value)}
@@ -247,7 +121,6 @@ export default function Toolbar() {
 
       <span className="w-px h-6 bg-gray-200 mx-2"></span>
 
-      {/* Text Formats (Bold, Italic, Underline) */}
       <button
         onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
         className={`p-2 rounded ${isBold ? 'bg-gray-200' : 'hover:bg-gray-100'}`} title="Bold (Cmd+B)"
@@ -269,7 +142,6 @@ export default function Toolbar() {
       
       <span className="w-px h-6 bg-gray-200 mx-2"></span>
 
-      {/* --- NEW: Alignment Buttons --- */}
       <button
         onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')}
         className={`p-2 rounded ${textAlign === 'left' ? 'bg-gray-200' : 'hover:bg-gray-100'}`} title="Align Left"

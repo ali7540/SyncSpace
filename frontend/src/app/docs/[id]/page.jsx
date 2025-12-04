@@ -42,11 +42,9 @@ export default function DocumentPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState("Synced");
 
-  // Modals & Sidebars
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // Version Preview State
   const [previewVersion, setPreviewVersion] = useState(null);
 
   const [role, setRole] = useState("VIEWER");
@@ -63,7 +61,6 @@ export default function DocumentPage({ params }) {
 
 
 
-  // ... (Socket listener for room-users is unchanged)
   useEffect(() => {
     if (!socket) return;
     socket.on("room-users", (users) => {
@@ -72,7 +69,6 @@ export default function DocumentPage({ params }) {
     return () => socket.off("room-users");
   }, [socket]);
 
-  // (Fetch document logic)
   useEffect(() => {
     const fetchDocument = async () => {
       try {
@@ -83,14 +79,12 @@ export default function DocumentPage({ params }) {
         setRole(doc.userRole);
         setOwnerName(doc.owner?.name || "Unknown");
 
-        // Check for valid content structure
         let loadedContent = EMPTY_DOC_STATE;
         if (doc.content && doc.content.root) {
           loadedContent = doc.content;
         }
 
         setContent(loadedContent);
-        // Store the stringified version for comparison later
         initialContentRef.current = JSON.stringify(loadedContent);
         initialTitleRef.current = doc.title;
       } catch (error) {
@@ -102,20 +96,15 @@ export default function DocumentPage({ params }) {
     if (id) fetchDocument();
   }, [id]);
 
-  // --- AUTO-SAVE LOGIC (FIXED) ---
   useEffect(() => {
-    // BUG FIX: Do NOT save if we are previewing a version!
     if (loading || content == null || role === "VIEWER" || previewVersion)
       return;
 
-    // FIX: Compare current content vs what we loaded from DB.
-    // If they are the same string, the user hasn't typed anything new.
     const currentContentString = JSON.stringify(debouncedContent);
 
     const titleChanged = debouncedTitle !== initialTitleRef.current;
     const contentChanged = currentContentString !== initialContentRef.current;
 
-    // If NOTHING changed, skip saving
     if (!contentChanged && !titleChanged) {
       return;
     }
@@ -129,7 +118,6 @@ export default function DocumentPage({ params }) {
           content: debouncedContent,
         });
         setSaveStatus("Saved");
-        // Update our ref so we don't save again until it changes again
         initialContentRef.current = currentContentString;
         initialTitleRef.current = debouncedTitle;
       } catch (error) {
@@ -141,22 +129,18 @@ export default function DocumentPage({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTitle, debouncedContent]);
 
-  // --- RESTORE HANDLER (FIXED) ---
   const handleRestore = async (version) => {
     if (!confirm("Restore this version? Current changes will be overwritten."))
       return;
 
     try {
-      // 1. Update local state immediately (So you see it)
       setContent(version.content);
 
-      // 2. Force a save to DB immediately
       await api.put(`/docs/${id}`, {
         title: title,
         content: version.content,
       });
 
-      // 3. Emit to socket so others see the restore
       if (socket) {
         socket.emit("send-changes", {
           documentId: id,
@@ -164,11 +148,9 @@ export default function DocumentPage({ params }) {
         });
       }
 
-      // 4. Close UI
       setPreviewVersion(null);
       setIsHistoryOpen(false);
       setSaveStatus("Restored");
-      // Update ref to avoid double-save
       initialContentRef.current = JSON.stringify(version.content);
     } catch (err) {
       alert("Failed to restore version");
@@ -186,7 +168,6 @@ export default function DocumentPage({ params }) {
   const isOwner = role === 'OWNER'
   return (
     <div className="flex flex-col h-screen bg-gray-50 relative overflow-hidden">
-      {/* Header */}
       <header className="bg-white border-b px-4 py-3 flex justify-between items-center shadow-sm z-20">
         <div className="flex items-center gap-4 flex-1">
           <Link
@@ -278,7 +259,6 @@ export default function DocumentPage({ params }) {
         </div>
       </header>
 
-      {/* Main Editor */}
       <main className="flex-1 overflow-y-auto p-6 flex justify-center relative z-0">
         <div className="w-full max-w-4xl bg-white shadow-lg rounded-xl min-h-[800px] border border-gray-200">
           <LexicalEditor
@@ -299,18 +279,16 @@ export default function DocumentPage({ params }) {
 
       <ProfileSidebar isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
 
-      {/* History Sidebar */}
       <HistorySidebar
         documentId={id}
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
-        onPreview={(version) => setPreviewVersion(version)} // Open Preview
+        onPreview={(version) => setPreviewVersion(version)} 
         isReadOnly={isReadOnly}
         Content={content}
         isOwner={isOwner}
       />
 
-      {/* Version Preview Overlay */}
       {previewVersion && (
         <VersionPreview
           version={previewVersion}

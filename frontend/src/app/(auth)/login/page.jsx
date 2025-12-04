@@ -50,9 +50,6 @@ export default function LoginPage() {
       <h2 className="mt-6 text-center text-2xl font-semibold text-gray-900">
         Sign In
       </h2>
-      {/* <p className="mt-1 text-center text-sm text-gray-600">
-        to continue to SyncSpace
-      </p> */}
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         {error && (

@@ -7,7 +7,6 @@ export default function VersionPreview({ version, onClose, onRestore, isReadOnly
 
   return (
     <div className="absolute inset-0 z-40 bg-black/20 backdrop-blur-sm flex items-center justify-center p-8">
-      {/* Top Bar for Preview */}
       <div className="absolute top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex justify-between items-center px-6 shadow-sm z-50">
         <div className="flex items-center gap-4">
             <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded">PREVIEW MODE</span>
@@ -33,13 +32,12 @@ export default function VersionPreview({ version, onClose, onRestore, isReadOnly
         </div>
       </div>
 
-      {/* The Editor Preview (Read Only) */}
       <div className="w-full max-w-4xl h-full mt-16 bg-white shadow-2xl rounded-lg border border-gray-300 overflow-hidden">
          <LexicalEditor 
             initialContent={version.content} 
-            onContentChange={() => {}} // No-op
-            isReadOnly={true} // Always read-only in preview
-            documentId="preview" // Dummy ID so it doesn't join socket room
+            onContentChange={() => {}} 
+            isReadOnly={true} 
+            documentId="preview" 
          />
       </div>
     </div>
